@@ -1,0 +1,136 @@
+create table person
+(
+driver_id varchar(10),
+name varchar(20),
+address varchar(15),
+primary key(driver_id)
+);
+
+create table car
+(
+regno varchar(10),
+model varchar(10),
+year int,
+primary key(regno)
+);
+
+create table accident
+(
+report_no int,
+adate date,
+location varchar(15),
+primary key(report_no)
+);
+
+create table owns
+(
+driver_id varchar(10),
+regno varchar(10),
+primary key(driver_id,regno),
+foreign key(driver_id) references person(driver_id) on delete cascade,
+foreign key(regno) references car(regno) on delete cascade
+);
+
+create table participated
+(
+driver_id varchar(10),
+regno varchar(10),
+report_no int,
+damage_amt int,
+primary key(driver_id,regno,report_no),
+foreign key(driver_id,regno) references owns(driver_id,regno) on
+delete cascade,
+foreign key(report_no) references accident(report_no) on
+delete cascade
+);
+
+insert into person
+(priver_id,name,address)
+values
+(1111,'Ramu','aaa'),
+(2222,'John','bbb'),
+(3333,'Priya','ccc'),
+(4444,'Gopal','ddd'),
+(5555,'Latha','eee');
+
+
+insert into car
+(regno,model,year)
+values
+('KA04q2301','Maruthi',2000),
+('KA05P100','Fordicon',2000),
+('KA03L999'.'Zen',1999),
+('KA03L1234','Maruthi',2002),
+('KA01p420','Indica',2002);
+
+
+insert into accident
+(report_no,adate,location)
+values
+(12,'2002-06-01','M G Road'),
+(200,'2002-12-10','DoubleRoad'),
+(300,'1999-06-23','M G Road'),
+(25000,'2000-06-11','Residency Road'),
+(26500,'2001-06-16','richmond Road');
+
+insert into owns
+(driver_id,regno)
+values
+(1111,'KA04q2301'),
+(1111,'KA05P100'),
+(2222,'KA03L999'),
+(3333,'KA03L1234'),
+(4444,'KA01p420');
+
+
+insert into participated
+(driver_id,regno,report_no,damage_amt)
+values
+(1111,'KA04q2301',12,2000),
+(2222,'KA03L999',200,500),
+(3333,'KA03L1234',300,10000),
+(4444,'KA01p420',25000,2375),
+(1111,'KA05P100',26500,70000);
+
+
+
+//3a
+update participated
+set damage_amt=25000
+where report_no=12 and regno='KA04q2301';
+
+//3b
+insert into accident 
+values(11,'2002-02-05','Dharwad')
+
+//4
+select count(distinct o.driver_id)
+from owns o ,participated p,accident a
+where a.report_no=p.report_no
+and o.driver_id=p.driver_id
+and a.adate like '2008-%-%';
+
+//5
+select count(*),model from accident a ,participated p,car c where a.report_no=p.report_no and p.regno=c.regno and c.model='Maruthi'
+
+//7
+select a.report_no, sum(damage_amt)  from participated p,accident a where a.report_no=p.report_no
+group by a.report_no;
+
+//8
+select report_no,max(damage_amt) from participated group by report_no
+order by report_no desc
+limit 1;
+
+//9
+select c.regno,max(damage_amt) from car c join participated p on p.regno=c.regno group by c.regno
+ order by c.regno desc
+ limit 1;
+
+
+
+
+
+
+
+
